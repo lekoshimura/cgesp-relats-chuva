@@ -175,7 +175,9 @@
             window.addEventListener('DOMContentLoaded', async () => {
               const WHICH_SERVER = (() => {
                 if (window.location.href.search('127.0.0.1') > 0) return 'DEV';
+                if (window.location.href.search('localhost') > 0) return 'DEV';
                 if (window.location.href.search('netlify') > 0) return 'HOMOLOG';
+                if (window.location.href.search('github') > 0) return 'HOMOLOG';
                 if (window.location.href.search('saisp.br') > 0) return 'PROD';
                 return '';
               })();
