@@ -6,6 +6,10 @@ Página com lista de relatórios de chuva mensal elaborados pelo CGE.
 * Referência: [https://docs.github.com/en/rest/repos/contents]
 * Estrutura do link da requisição: `https://api.github.com/repos/{OWNER}/{REPO}/contents/PATH`
 
+Homologação em:
+
+* <https://lekoshimura.github.io/cgesp-relats-chuva/src/relatorio-chuvas.html>
+
 ## Setting Up Development Environment
 
 * Windows 10
