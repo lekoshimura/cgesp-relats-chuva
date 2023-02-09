@@ -3,8 +3,6 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Relatórios de Chuva - CGE</title>
-
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/yui/3.4.1/cssreset/reset-min.css"
       type="text/css"
@@ -152,9 +150,9 @@
           </div>
         </div>
       </div>
-      <div class="yui3-g" id="bd">
+      <div class="yui3-g">
         <style>
-          figure {
+          #lista figure {
             height: 1rem;
             width: 1rem;
             display: inline-block;
@@ -165,6 +163,10 @@
           #lista a:hover {
             background-color: #e5f9ff;
           }
+          #lista #msg-erro {
+            color: red;
+            font-family: 'Courier New', Courier, monospace;
+          }
         </style>
         <div class="titulo-bd">
           Relatórios de Chuva
@@ -173,101 +175,139 @@
         <div class="yui3-u">
           <script>
             window.addEventListener('DOMContentLoaded', async () => {
-              const WHICH_SERVER = (() => {
-                if (window.location.href.search('127.0.0.1') > 0) return 'DEV';
-                if (window.location.href.search('localhost') > 0) return 'DEV';
-                if (window.location.href.search('netlify') > 0) return 'HOMOLOG';
-                if (window.location.href.search('github') > 0) return 'HOMOLOG';
-                if (window.location.href.search('saisp.br') > 0) return 'PROD';
-                return '';
-              })();
-              function githubAssets() {
-                switch (WHICH_SERVER) {
-                  case 'DEV':
-                    return 'github-api/assets.json';
-                  case 'HOMOLOG':
-                    return 'https://api.github.com/repos/lekoshimura/cgesp-relats-chuva/contents/assets';
-                  case 'PROD':
-                    return 'https://api.github.com/repos/lekoshimura/cgesp-relats-chuva/contents/assets';
-                  default:
-                    return '';
+              try {
+                const WHICH_SERVER = (() => {
+                  if (window.location.href.search('127.0.0.1') > 0) return 'DEV';
+                  if (window.location.href.search('localhost') > 0) return 'DEV';
+                  if (window.location.href.search('netlify') > 0) return 'HOMOLOG';
+                  if (window.location.href.search('github') > 0) return 'HOMOLOG';
+                  if (window.location.href.search('saisp.br') > 0) return 'PROD';
+                  return '';
+                })();
+                function githubAssetsUrl() {
+                  switch (WHICH_SERVER) {
+                    case 'DEV':
+                      return 'github-api/assets.json';
+                    case 'HOMOLOG':
+                      return 'https://api.github.com/repos/lekoshimura/cgesp-relats-chuva/contents/assets';
+                    case 'PROD':
+                      return 'https://api.github.com/repos/lekoshimura/cgesp-relats-chuva/contents/assets';
+                    default:
+                      return '';
+                  }
                 }
-              };
-              function githubAssetsByYear(year) {
-                switch (WHICH_SERVER) {
-                  case 'DEV':
-                    return `github-api/assets-${year}.json`;
-                  case 'HOMOLOG':
-                    return `https://api.github.com/repos/lekoshimura/cgesp-relats-chuva/contents/assets/${year}`;
-                  case 'PROD':
-                    return `https://api.github.com/repos/lekoshimura/cgesp-relats-chuva/contents/assets/${year}`;
-                  default:
-                    return '';
+                function githubAssetsByYearUrl(year) {
+                  switch (WHICH_SERVER) {
+                    case 'DEV':
+                      return `github-api/assets-${year}.json`;
+                    case 'HOMOLOG':
+                      return `https://api.github.com/repos/lekoshimura/cgesp-relats-chuva/contents/assets/${year}`;
+                    case 'PROD':
+                      return `https://api.github.com/repos/lekoshimura/cgesp-relats-chuva/contents/assets/${year}`;
+                    default:
+                      return '';
+                  }
                 }
-              };
-              async function fetchDirs() {
-                const response = await fetch(githubAssets());
-                const json = await response.json();
-                const dirs = json.sort((a, b) => {
-                  // ordena do mais recente para o mais antigo
-                  if (a['path'] > b['path']) return -1;
-                  if (a['path'] < b['path']) return 1;
-                  return 0;
-                });
-                return dirs;
-              };
-              async function fetchDirContent(year) {
-                const response = await fetch(githubAssetsByYear(year));
-                return await response.json();
-              };
-              const dirs = await fetchDirs();
-              const listacontainer = document.getElementById('lista');
-              dirs.forEach(async dir => {
-                const h1 = document.createElement('h1');
-                h1.textContent = dir['name'];
-                const ul = document.createElement('ul');
-                const dirContent = await fetchDirContent(dir['name']);
-                dirContent.forEach(item => {
-                  const li = document.createElement('li');
-                  const a = document.createElement('a');
-                  a.setAttribute('href', item['download_url']);
-                  a.setAttribute('download', '');
-                  const span = document.createElement('span');
-                  span.textContent = item['name'];
-                  const figure = document.createElement('figure');
-                  figure.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512">
-                      <title>Download</title>
-                      <path
-                        d="M336 176h40a40 40 0 0140 40v208a40 40 0 01-40 40H136a40 40 0 01-40-40V216a40 40 0 0140-40h40"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="32"
-                      />
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="32"
-                        d="M176 272l80 80 80-80M256 48v288"
-                      />
-                    </svg>`;
-                  a.appendChild(span);
-                  a.appendChild(figure);
-                  li.appendChild(a);
-                  ul.appendChild(li);
-                });
-                listacontainer.appendChild(h1);
-                listacontainer.appendChild(ul);
-              });
-              const msgCarregando = document.getElementById('msg-carregando');
-              msgCarregando.remove();
+                async function fetchDirs() {
+                  try {
+                    const response = await fetch(githubAssetsUrl());
+                    if (!response.ok) throw response.statusText;
+                    const json = await response.json();
+                    const dirs = json.sort((a, b) => {
+                      // ordena do mais recente para o mais antigo
+                      if (a['path'] > b['path']) return -1;
+                      if (a['path'] < b['path']) return 1;
+                      return 0;
+                    });
+                    return [dirs, null];
+                  } catch (error) {
+                    return [null, `${error} at fetchDirs(${githubAssetsUrl()})`];
+                  }
+                }
+                async function fetchDirContent(year) {
+                  try {
+                    const response = await fetch(githubAssetsByYearUrl(year));
+                    if (!response.ok) throw response.statusText;
+                    const json = await response.json();
+                    return [json, null];
+                  } catch (error) {
+                    return [null, `${error} at fetchDirContent(${githubAssetsByYearUrl(year)})`];
+                  }
+                }
+                function removeCarregandoContainer() {
+                  const msgCarregando = document.getElementById('msg-carregando');
+                  msgCarregando.remove();
+                }
+                function removeMsgErroContainer() {
+                  const msgErro = document.getElementById('msg-erro');
+                  msgErro.remove();
+                }
+                function handleError(error) {
+                  removeCarregandoContainer();
+                  console.error(error);
+                  const msgErro = document.getElementById('msg-erro');
+                  const h1 = document.createElement('h1');
+                  h1.textContent = 'ERRO!';
+                  msgErro.appendChild(h1);
+                  const pre = document.createElement('pre');
+                  pre.textContent = error;
+                  msgErro.appendChild(pre);
+                }
+                const [dirs, errorFetchDirs] = await fetchDirs();
+                if (errorFetchDirs) throw errorFetchDirs;
+                const listacontainer = document.getElementById('lista');
+                for (let i = 0; i < dirs.length; i++) {
+                  const h1 = document.createElement('h1');
+                  h1.textContent = dirs[i]['name'];
+                  const ul = document.createElement('ul');
+                  const [dirContent, errorFetchDirContent] = await fetchDirContent(dirs[i]['name']);
+                  if (errorFetchDirContent) throw errorFetchDirContent;
+                  dirContent.forEach((item) => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.setAttribute('href', item['download_url']);
+                    a.setAttribute('download', '');
+                    const span = document.createElement('span');
+                    span.textContent = item['name'];
+                    const figure = document.createElement('figure');
+                    figure.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512">
+                              <title>Download</title>
+                              <path
+                                d="M336 176h40a40 40 0 0140 40v208a40 40 0 01-40 40H136a40 40 0 01-40-40V216a40 40 0 0140-40h40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="32"
+                              />
+                              <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="32"
+                                d="M176 272l80 80 80-80M256 48v288"
+                              />
+                            </svg>`;
+                    a.appendChild(span);
+                    a.appendChild(figure);
+                    li.appendChild(a);
+                    ul.appendChild(li);
+                  });
+                  listacontainer.appendChild(h1);
+                  listacontainer.appendChild(ul);
+                };
+                removeCarregandoContainer();
+                removeMsgErroContainer();
+              } catch (error) {
+                handleError(error);
+              }
             });
           </script>
           <div id="lista" class="content">
             <p id="msg-carregando">Carregando.</p>
+            <p id="msg-erro"></p>
+          </div>
         </div>
       </div>
     </div>
