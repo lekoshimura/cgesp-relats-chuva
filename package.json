@@ -1,0 +1,11 @@
+{
+  "name": "cgesp-relats-chuva",
+  "version": "1.0.0",
+  "description": "Página com lista de relatórios de chuva mensal elaborados pelo CGE",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server -o ./src/relatorio-chuvas.html"
+  },
+  "author": "FCTH",
+  "license": "UNLICENSED"
+}
