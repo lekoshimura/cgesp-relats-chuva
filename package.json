@@ -4,7 +4,7 @@
   "description": "Página com lista de relatórios de chuva mensal elaborados pelo CGE",
   "main": "index.js",
   "scripts": {
-    "start": "http-server -o ./src/relatorio-chuvas.html"
+    "start": "http-server -p 8080 -o ./src/index.html"
   },
   "author": "FCTH",
   "license": "UNLICENSED"
