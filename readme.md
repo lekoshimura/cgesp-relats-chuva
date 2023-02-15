@@ -1,4 +1,4 @@
-# CGE Relatório de Chuvas
+# CGE Planilhas de Precipitação
 
 Página com lista de relatórios de chuva mensal elaborados pelo CGE.
 
